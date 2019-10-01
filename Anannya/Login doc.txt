@@ -1,0 +1,536 @@
+....................................................................................................................
+.......................................................................................................
+................APP.JS.....................................................................
+................................................................................
+...............................................................
+
+var express = require('express');
+var bodyParser = require('body-parser');
+var path = require('path');
+var flash = require('connect-flash');
+var cookieParser = require('cookie-Parser');
+var exphbs = require('express-handlebars');
+var session = require('express-session');
+var passport = require('passport');
+var validator = require('express-validator');
+var LocalStrategy = require('passport-local').Strategy;
+var mongo = require('mongodb');
+var mongoose = require('mongoose');
+mongoose.Promise =  require('bluebird');
+const { check, validationResult } = require('express-validator/check');
+
+var routes = require('./routes/index');
+var users = require('./routes/users');
+
+//Init App
+var app = express();
+
+//view engine
+app.set('views',path.join(__dirname, 'views'));
+app.engine('handlebars',exphbs({defaultLayout: 'layout'}));
+app.set('view engine', 'handlebars');
+// app.set('views',path.join(__dirname, 'views'));
+// app.engine('ejs',ejs({defaultLayout: 'layout'}));
+// app.set('view engine', 'ejs');
+// app.set('view engine','ejs');
+// app.set('views',path.join(__dirname,'views'));
+
+//BodyParser Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
+
+//Set Static Folder
+app.use(express.static(path.join(__dirname,'public')));
+
+//Express session
+app.use(session({
+    secret: 'secret',
+    saveUninitialized: true,
+    resave: true
+}));
+
+//Passport init
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+app.use(validator());
+
+app.use(flash());
+app.use(function(req,res,next){
+  res.locals.error = req.flash('error');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.user = req.user || null;
+   next();
+});
+
+app.use('/',routes);
+app.use('/users',users);
+
+app.listen(3000, function(){
+  console.log('Listening to port 3000');
+});
+
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................ROUTES/INDEX.JS...............................................................
+.............................................................................
+...............................................................
+.........................................................
+
+var express = require('express');
+var router = express.Router();
+
+//Get homepage
+router.get('/',ensureAuthentication,function(req,res){
+    res.render('index');
+});
+
+function ensureAuthentication(req,res,next){
+    if (req.isAuthenticated()){
+        return next();
+    }
+    else{
+        res.redirect('/users/login');
+    }
+}
+
+module.exports = router;
+
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................ROUTES/USERS.JS...............................................................
+.............................................................................
+...............................................................
+.........................................................
+
+var express = require('express');
+var router = express.Router();
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+
+var User = require('../models/user');
+
+
+//Get Register
+router.get('/register',function(req,res){
+    res.render('register');
+});
+
+//Get login
+router.get('/login',function(req,res){
+    res.render('login');
+});
+
+//Video register user
+router.post('/register',function(req,res){
+    var username = req.body.username;
+    var email = req.body.email;
+    var checkAdmin = req.body.checkAdmin;
+    var password = req.body.password;
+    var confirmpassword = req.body.confirmpassword;
+
+    req.checkBody('username', 'Enter Username').notEmpty();
+    req.checkBody('email','Enter E-mail').isEmail();
+    req.checkBody('checkAdmin','Verify if you are Admin').notEmpty();
+    req.checkBody('password','Enter password').notEmpty();
+    req.checkBody('confirmpassword','Confirm password').equals(req.body.password);
+
+    var errors = req.validationErrors();
+
+    if(errors){
+         res.render('register',{
+            errors: errors
+        });
+    }
+    else{
+        console.log('added user');
+        var newUser = new User({
+           username : username,
+           email : email,
+           checkAdmin : checkAdmin,
+           password : password
+        });
+
+        User.createUser(newUser, function(err,user){
+            if (err) throw err;
+            console.log(user);
+        });
+     req.flash('success_msg','Successfully registered');
+     res.redirect('/users/login');
+    }
+});
+        
+
+
+
+// //Register user
+// router.post('/register',function(req,res){
+//         req.checkBody('username','Enter Username').not().isEmpty();
+//         req.checkBody('email','Enter E-mail').not().isEmpty();
+//         req.checkBody('checkAdmin','Verify if you are Admin').not().isEmpty();
+//         req.checkBody('password','Enter password').not().isEmpty();
+//         req.checkBody('confirmpassword','Confirm password').not().isEmpty();
+
+//         const err = req.validationErrors(req);
+//         if(!err.isEmpty()) {
+//             var arr = err.array();
+//             UserDetails.find().then(function(users){
+//                 console.log(arr);
+//                 res.render('register',{
+//                     title: 'Employees',
+//                     users: users,
+//                     err: arr
+//                 });
+//             });
+//         }else{
+
+//             var newUser = new User({
+//                 username : req.body.username,
+//                 email : req.body.email,
+//                 checkAdmin : req.body.checkAdmin,
+//                 password : req.body.password
+//              });
+
+//              UserDetails.createUser(newUser,function(errorr,user){
+//                  if(errorr) throw errorr;
+//                  console.log(user)
+//              });
+//             // newUser.save(function(errs,data){
+//             //     if(errs){return console.log(errs)}
+//             //     res.redirect('/users/login')
+//             // })
+//         }
+//         req.flash('success_msg','Successfully registered');
+//         res.redirect('/users/login');
+// });
+
+
+// //Alternative register user
+// router.post('/register',function(req,res){
+    
+//     check('username', 'Enter username').notEmpty();
+//     req.checkBody('email','Enter e-mail').not().isEmpty();
+//     req.checkBody('checkAdmin','Enter Admin').not().isEmpty();
+//     req.checkBody('password','Enter password').not().isEmpty();
+//     req.checkBody('confirmpassword','Confirm Password').not().isEmpty();
+    
+//         const err = validationResult(req);
+//         if (!err.isEmpty()) {
+//             var arr = err.array();
+//            // console.log( arr );
+//             UserDetails.find().then(function(users){
+//              console.log( arr );
+//              res.render('register',{
+//                 title: 'Employees',
+//                 users: users,
+//                 err: arr
+//                 });
+//                 //res.redirect('/');
+//               });
+ 
+//           }else{
+//             var newUser = new User({
+//                 username : req.body.username,
+//                 email : req.body.email,
+//                 checkAdmin : req.body.checkAdmin,
+//                 password : req.body.password
+//              });
+ 
+//                 // console.log(newUser);
+//                 newUser.save(function (errs, data) {
+//                      if (errs) {
+//                        return console.log(errs);
+//                        }
+//                        res.redirect('/');
+//                      });
+//               }
+//     })
+
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.getUserByUsername(username,function (err, user) {
+            if (err) throw err; 
+            if (!user)
+             { return done(null, false, {message:'Incorrect Username'}); }
+            User.comparePassword(password,user.password,function(err,isMatch){
+                if(err) throw err;
+                if(isMatch){
+                    return done(null,user,{message:'Access Granted'});
+                }
+                else{
+                    return done(null,false,{message:'Invalid Password'});
+                }
+            });
+        });
+    })
+);
+
+
+passport.serializeUser(function(user, done){
+    done(null, user.id);
+});
+
+    
+passport.deserializeUser(function(id, done) {
+    User.getUserById(id, function(err, user) {
+        done(err, user);
+    });
+});
+
+router.post('/login',
+    passport.authenticate('local',{successRedirect: '/', failureRedirect: "/users/login",failureFlash: true}),
+    function(req,res){
+      res.redirect('/');
+});
+
+//Get logout
+router.get('/logout', function(req,res){
+    req.logout();
+   // req.flash('success_msg','You are logged out');
+    res.redirect('/users/login');
+});
+
+
+
+
+
+
+
+module.exports = router;
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................layouts/layout.hbs...............................................................
+.............................................................................
+...............................................................
+.........................................................
+<!DOCTYPE html>
+<html>
+    <head>
+      <title>LOGIN App</title>
+      <link rel="stylesheet" href="/css/bootstrap.css" />
+      <link rel= "stylesheet" href="/css/style.css" />
+      {{!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> --}}
+    </head>
+    <body>
+          <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand">Leave Application</h3>
+          <nav class="nav nav-masthead justify-content-center">
+            <a class="nav-link active" href="/">Home</a>
+            {{#if user}}
+                <a class="nav-link" href="/users/logout">Logout</a>
+               {{else}}
+                 <a class="nav-link" href="/users/login">Login</a>
+                 <a class="nav-link" href="/users/register">Register</a>
+            {{/if}}
+           </nav>
+        </div>
+      </header>
+
+      <main role="main" class="inner cover">
+        <h2 class="cover-heading"></h2>
+        <div class ="row">
+          <div class="col-lg-12">
+            {{#if success_msg}}
+            <div class="alert alert-success">{{success_msg}}</div>
+            {{/if}}
+             {{#if error_msg}}
+            <div class="alert alert-danger">{{error_msg}}</div>
+            {{/if}}
+             {{#if error}}
+            <div class="alert alert-success">{{error}}</div>
+            {{/if}}
+            
+           {{{body}}}
+          </div>
+        </div>
+           <p class="lead">
+            {{!-- <p> <a href="#" class="btn btn-lg btn-secondary">Apply</a></p> --}}
+        </p>
+      </main>
+
+     <footer class="mastfoot mt-auto">
+        <div class="inner">
+          <p> <small class="d-block mb-3 text-muted">&copy; 2018-2019</small></p>
+        </div>
+      </footer>
+    </div>
+    </body>
+    </html>
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................layouts/index.hbs...............................................
+.............................................................................
+...............................................................
+.........................................................
+
+<h3 class = "page-header"><p>
+Welcome to Leave application portal !
+</p></h3>
+
+
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................layouts/login.hbs...............................................
+.............................................................................
+...............................................................
+.........................................................
+
+<div class= "container">
+<h3 class="page-header">Login</h3>
+<form method="POST" action="/users/login">
+
+<div class="form-group">
+    <label>Username</label><br>
+    <input type="text" class="form-control" name= "username" placeholder="Username">
+</div>
+{{!-- <div class="form-group">
+    <label>E-mail</label><br>
+    <input type="text" class="form-control" name="email" placeholder="E-mail ID">
+</div> --}}
+<div class="form-group">
+    <label>Password</label><br>
+    <input type="text" class="form-control" name="password" placeholder="Password">
+</div>
+<button type="submit" class="btn btn-lg btn-secondary">Submit</button>
+</form>
+</div>
+
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................layouts/logout.hbs...............................................
+.............................................................................
+...............................................................
+.........................................................
+
+{{!-- logout--}}
+
+<h3 class="page-header">Logout</h3>
+<form method="POST" action="/users/logout">
+
+<button type="submit" class="btn btn-default">Logout</button>
+</form> 
+
+
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................layouts/register.hbs...............................................
+.............................................................................
+...............................................................
+.........................................................
+
+
+<h3 class="page-header">Register</h3>
+{{#if errors}}
+    {{#each errors}}
+        <div class= "alert alert-danger">{{msg}}</div>
+        {{/each}}
+{{/if}}
+{{!-- <% if (err != undefined){ %>
+    <ul>
+        <% err.forEach(function(error){ %>
+            <div class = "alert alert-danger">
+                <li><%= error.msg %></li>
+            </div>
+       <% }) %>
+    </ul>
+<% } %> --}}
+
+<form method="POST" action="/users/register">
+<div class="form-group">
+    <label>Username</label><br>
+    <input type="text" class="form-control" name= "username" placeholder="Username">
+</div>
+<div class="form-group">
+    <label>E-mail</label><br>
+    <input type="text" class="form-control" name="email" placeholder="E-mail ID">
+</div>
+<div class="form-group">
+    <label>CheckAdmin</label><br>
+    <input type="boolean" class="form-control" name="checkAdmin" placeholder="checkAdmin">
+</div>
+<div class="form-group">
+    <label>Password</label><br>
+    <input type="text" class="form-control" name="password" placeholder="Password">
+</div>
+<div class="form-group">
+    <label>Confirm Password</label><br>
+    <input type="text" class="form-control" name="confirmpassword" placeholder="Password">
+</div>
+<button type="submit" class="btn btn-lg btn-secondary">Submit</button>
+</form> 
+
+
+.........................................................................................................................
+...............................................................................................................
+....................................................................................................
+...........................models/user.js...............................................
+.............................................................................
+...............................................................
+.........................................................
+
+var mongoose = require('mongoose');
+var bcrypt = require('bcryptjs')
+
+mongoose.connect('mongodb://localhost/sprint2',{useNewUrlParser: true});
+const Schema = mongoose.Schema;
+const UserDetail = new Schema({
+	    username: String,
+        email: String,
+        checkAdmin: Boolean,
+        password: String
+    },
+    {versionKey: false}
+);
+
+var User = module.exports = mongoose.model('User', UserDetail,'user');
+
+module.exports.createUser = function(newUser,cb){
+    bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(newUser.password, salt, function(err, hash) {
+            // Store hash in your password DB.
+            newUser.password = hash;
+            newUser.save(cb);
+        });
+    });
+}
+
+module.exports.getUserByUsername = function(username,cb){
+    var query = {username: username};
+    User.findOne(query,cb);
+}
+
+module.exports.comparePassword = function(candidatePassword,hash,cb){
+    bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
+        if(err) throw (err);
+        cb(null, isMatch);
+    });
+}
+
+
+module.exports.getUserById = function(id,cb){
+    User.findById(id,cb);
+}
+
+
+
+

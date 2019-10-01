@@ -1,0 +1,66 @@
+{{!-- 
+<div class= "container">
+<h3 class="page-header"> 
+    
+   <p>Login</p></h3>
+<form method="POST" action="/users/login">
+
+<div class="form-group">
+    <label>Username</label><br>
+    <input type="text" class="form-control" name= "username" placeholder="Username" autofocus>
+</div>
+
+<div class="form-group">
+    <label>Password</label><br>
+    <span class="oi" data-glyph="icon-name" title="icon name" aria-hidden="true"></span>
+    <span class="fi-action-undo"></span>
+    
+    <input type="password" class="form-control" name="password" placeholder="Password">
+</div>
+<button type="submit" class="btn btn-lg btn-secondary">Submit</button>
+</form>
+</div> --}}
+
+ <div class="container" id="myBtn" data-toggle="modal" data-target="#myModal" >
+      <!-- Modal -->
+  {{!-- <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content"> --}}
+
+        <div class="card card-container">
+             <center><h4 class="mb-3 text-muted" >Sign in</h4></center> 
+            <!-- <img class="profile-img-card" src="//lh3.googleusercontent.com/-6V8xOA6M7BA/AAAAAAAAAAI/AAAAAAAAAAA/rzlHcD0KYwo/photo.jpg?sz=120" alt="" /> -->
+            <img id="profile-img" class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
+            <p id="profile-name" class="profile-name-card"></p>
+            
+            <form method="POST" action="/users/login">
+            <div class="form-group">
+                {{!-- <span class="form-control prepend"><i class="glyphicon glyphicon-user"></i></span> --}}
+                
+                <input type="text" id="username" name= "username" class="form-control" placeholder="Username" required autofocus>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+                <div id="remember" class="checkbox">
+                    <label>
+                        <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+ 
+              <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
+            </form><!-- /form -->
+
+        </div><!-- /card-container -->
+       </div><!-- /modal content -->
+      </div>
+    </div><!-- /modal -->
+ </div><!-- /container -->
+
+{{!-- <script>
+    $(document).ready(function(){
+  $("#myBtn").click(function(){
+    $("#myModal").modal();
+  });
+});
+</script> --}}

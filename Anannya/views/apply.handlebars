@@ -1,0 +1,288 @@
+  <!DOCTYPE html>
+<html>
+    <head>
+      {{!-- <link rel="stylesheet" href="bootstrap.css"> --}}
+    {{!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">     --}}
+    
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js"></script>
+    {{!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" 
+type='text/javascript'></script> --}}
+    </head>
+
+  <body >    
+
+    <div class="container ">
+      <div class="boxit">
+      {{!-- <div class="py-1 text-center">
+        <img class="d-block mx-auto mb-4" src="../../assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+        <h3>Application form</h3>
+        <p class="lead">Please fill out the Leave application form.</p>
+      </div> --}}
+   
+      <div class="row">
+        <div class="col-md-4 order-md-2 mb-4">
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="yel">Your Leave Balance</span>
+            <span name="totLvBal" id="totLvBal"class="badge badge-secondary badge-pill">{{user.totLvBal}}</span>
+          </h4>
+          <hr>
+          <ul class="list-group mb-3">
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0">CL</h6>
+                <small class="text-muted">Casual Leave</small>
+              </div>
+              <span id="clbal" class="text-muted">{{user.leaveBal.[0]}}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0">EL </h6>
+                <small class="text-muted">Earned Leave</small>
+              </div>
+              <span id="elbal" class="text-muted">{{user.leaveBal.[1]}}</span>
+            </li>
+
+           <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0">SL</h6>
+                <small class="text-muted" id="leavetyp">Sick Leave</small>
+              </div>
+              <span id="slbal" class="text-muted">{{user.leaveBal.[2]}}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0">Total Leaves Taken</h6>
+                <small class="text-muted">Leaves this year</small>
+              </div>
+              <span class="text-muted" id="totLvTkn" name="totLvTkn" >{{user.totLvTkn}}</span>
+           </li>
+            <li class="list-group-item d-flex justify-content-between bg-light">
+              <div class="text-success">
+                <h6 class="my-0">Applied Leaves</h6>
+                <small>Number of leaves applied for</small>
+              </div>
+              <span class="text-success" id="result" name="result">0</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Leaves Remaining</span>
+              <span id="remaining" name="remaining" ><strong>0</strong></span>
+            </li>
+          </ul>
+             <center>
+              <button type="submit" id="refresh" onclick="cal()" class="btn btn-success" data-id = "{{user.totLvBal}}">Refresh</button>
+            </center> 
+        </div>
+
+      
+        <div class="col-md-8 order-md-1">
+          <form method="POST" action="/users/apply" class="needs-validation" novalidate>
+            <div class="row">
+              <div class="col-md-6">
+                <h4 class="text-left">Leave Application</h4>
+              </div>
+              <div class="col-md-4">
+              <h5 class="text-right" >Srl</h5>
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="srl" name="applno" id="applno">
+              </div>
+            </div>
+           <hr>
+
+           
+              <div class="mb-3">                   
+                  <div class="form-control">
+                    {{!-- <div class="form-control-prepend"><i class="glyphicon glyphicon-list"></i> --}}
+                     <select class="custom-select" name="leaveType">
+                          <option >Select Type of leave</option>
+                          <option value="Casual Leave">Casual Leave</option>
+                          <option value="Earned Leave">Earned Leave</option>
+                          <option value="Sick Leave">Sick Leave</option>
+                          <option value="Special Leave">Special Leave</option>
+                          <option value="Extra Ordinary Leave">Extra Ordinary Leave</option>
+                    </select>
+                  </div>   
+                                     
+              </div>
+
+              <div class="mb-3">
+                <div class="lvbox">
+                  <h5 class="text-center text-muted"><b>Leave Duration</b></h5> 
+                  <div class="row">
+                      <div class="col-md-5 mb-3">
+                          <input id="fromDate" class="form-control" name="fromDate" type='text' placeholder="Leave From" required />                
+                          <div class="invalid-feedback">Enter Start of Leave.</div>
+                      </div>
+                      <div class="col-md-5 mb-3">
+                          <input id="toDate" class="form-control" name="toDate" type='text' placeholder="Leave To" required/>&nbsp;&nbsp;
+                          <div class="invalid-feedback">Enter End of Leave.</div>
+                      </div>
+                      <div class="col-md-2 mb-3">
+                       <span class="text-muted result" id="lvdays" name="lvdays" type="number">0 days</span>   
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="lvbox">
+                  <h5 class="text-center text-muted"><b>Out-Station Leave</b></h5> 
+                  <div class="row">
+                      <div class="col-md-5 mb-3">
+                          <input id="stnout" class="form-control" name="stnout" type='text' placeholder="Station Out" required />                
+                          <div class="invalid-feedback">Enter Station Out date.</div>
+                      </div>
+                      <div class="col-md-5 mb-3">
+                          <input id="stnin" class="form-control" name="stnin" type='text' placeholder="Station In" required/>&nbsp;&nbsp;
+                          <div class="invalid-feedback">Enter Station In date.</div>
+                      </div>
+                      <div class="col-md-2 mb-3">
+                          <span class="text-muted" id="stndays" type="number">0 days</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+        
+              <div class="mb-3">
+                  <input type="text" class="form-control" id="chargeTakenBy"  name="chargeTakenBy" placeholder="Charge taken by" required>
+                  <div class="invalid-feedback">
+                    Please specify the person who will take charge in your absence.
+                  </div>
+              </div>
+
+           <div class="row">
+              <div class="col-sm-8 mb-3">
+                  {{!-- Reason: <span class="text-muted">(Optional)</span></label><br> --}}
+                  <textarea class="form-control" name="reason" id="reason" placeholder="Reason for leave"></textarea>
+                  <div class="invalid-feedback">
+                    Please enter reason  for leave.
+                  </div>
+                </div>
+           
+                <div class="col-sm-4 mb-3">
+                <input class="form-control" type="date" name="rejoinDate" id="rejoinDate" placeholder="Rejoining date">
+                </div>
+           </div>
+
+
+            {{!-- <hr class="mb-4">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="singleType">
+              <label class="custom-control-label" for="singleType">Use single type of leaves</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="lop">
+              <label class="custom-control-label" for="lop">Include Leave w/o Pay</label>
+            </div>
+            <hr class="mb-4">
+
+            <h4 class="mb-3">Combination of Leaves</h4>
+
+            <div class="d-block my-3">
+              <div class="custom-control custom-radio">
+                <input id="cl" name="leaveType" type="radio" class="custom-control-input" checked required>
+                <label class="custom-control-label" for="cl">CL</label>
+              </div>
+              <div class="custom-control custom-radio">
+                <input id="el" name="leaveType" type="radio" class="custom-control-input" required>
+                <label class="custom-control-label" for="el">EL</label>
+              </div>
+              <div class="custom-control custom-radio">
+                <input id="sick" name="leaveType" type="radio" class="custom-control-input" required>
+                <label class="custom-control-label" for="sick">Sick Leave</label>
+              </div>
+            </div> --}}
+
+            {{!-- <hr class="mb-4"> --}}
+            <button class="btn btn-primary btn-lg btn-block" type="submit"></i>Apply for Leave</button>
+          </form>
+          </div> 
+ </div>
+
+<script>
+
+$(function() {
+  var diffr;
+       $("#fromDate").datepicker({
+         minDate: 0,
+         onClose: function(selectedDate) {
+           var newDate = new Date(selectedDate);
+           newDate.setDate(newDate.getDate() + 1);
+           $("#toDate").datepicker("option", "minDate", newDate);
+         }
+       });
+
+       $("#toDate").datepicker({
+         onClose: function(){
+         var fromDate = $('#fromDate').val(),
+           toDate = $('#toDate').val(),
+           from, to, duration,total;
+          
+         from = moment(fromDate, 'MM-DD-YYYY');
+         to = moment(toDate, 'MM-DD-YYYY');
+
+         diffr = to.diff(from, 'days')+1;
+         $('#result').text(diffr);
+         $('#lvdays').text(diffr + ' days');
+         }
+       });
+
+
+        $("#stnout").datepicker({
+         minDate: 0,
+         onClose: function(selectedDate) {
+           var newDate = new Date(selectedDate);
+           newDate.setDate(newDate.getDate() + 1);
+           $("#stnin").datepicker("option", "minDate", newDate);
+         }
+       });
+       
+       $("#stnin").datepicker({
+         onClose: function(){
+          var sfromDate = $('#stnout').val(),
+           stoDate = $('#stnin').val(),
+           sfrom, sto, sduration,sdiffr;
+           
+
+           sfrom = moment(sfromDate, 'MM-DD-YYYY');
+           sto = moment(stoDate, 'MM-DD-YYYY');
+
+           sdiffr = sto.diff(sfrom, 'days')+1;
+
+           $('#result').text(sdiffr);
+           $('#stndays').text(sdiffr + ' days');
+         }
+       });
+    
+     // var arr[] = user.leaveBal;
+              
+      $('#refresh').on('click',function cal(){
+        var tot = $(this).data('id');
+        var appl = $('#result').val();
+        
+
+        var rem = tot-appl;
+       
+       // var appl = document.getElementById("result").value;
+         //alert(tot-diffr);
+         //alert('rem val ' + rem)
+        // $('#remaining').text($(this).data('id'));
+         //var tot =  $('#totLvBal').val(),
+         //   appl = $('#result').val();
+             
+         //var rem = tot-appl;   
+       
+         //alert(tot);
+        $('#remaining').text(tot - diffr); 
+        
+      });
+
+     });
+     </script>
+  
+  <!-- end of script -->
+ 
+  </body>
+  </html>

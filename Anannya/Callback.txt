@@ -1,0 +1,26 @@
+module.exports.getNextSequence= function(name,cb) {
+    var ret = Counter.findOneAndUpdate(
+             { "_id": name },
+             { $inc: {"seq":1} },
+             { upsert: true},
+             function (err, data) {
+                 if (err) throw err;
+                 else{
+                     console.log("counting from db " + data.seq);
+                     cb(null,data);
+                 };
+             });
+  //console.log("counting "+ ret);
+  //return ret.seq;
+}
+
+====================================================================
+
+var countt = Counter.getNextSequence("itemid", function(err,data){
+    if (err) throw err;
+    if(data){
+        console.log("from the function " + data.seq);
+        return (null,data.seq);
+    }
+});
+console.log("value of count ");

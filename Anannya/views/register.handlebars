@@ -1,0 +1,35 @@
+
+
+{{!-- <h3 class="page-header">Register</h3> --}}
+{{#if errors}}
+    {{#each errors}}
+        <div class= "alert alert-danger">{{msg}}</div>
+        {{/each}}
+{{/if}}
+{{!-- <% if (errors != undefined){ %>
+    <ul>
+        <% errors.forEach(function(errors){ %>
+            <div class = "alert alert-danger">
+                <li><%= errors.msg %></li>
+            </div>
+       <% }) %>
+    </ul>
+<% } %> --}}
+
+<div class="container">
+    <div class="card card-container">
+       <center><h4 class="mb-3 text-muted" >Sign up</h4></center> <br>
+
+<form method="POST" action="/users/register">
+
+<div class="form-group"><input type="text" class="form-control" name= "username" placeholder="Username" autofocus ></div>
+<div class="form-group"><input type="text" class="form-control" name="email" placeholder="E-mail ID"></div>
+<div class="form-group"><input type="password" class="form-control" name="password" placeholder="Password"></div>
+<div class="form-group"><input type="password" class="form-control" name="confirmpassword" placeholder="Confirm Password"></div>
+
+<label><input type="checkbox" value="true" id="checkAdmin" name="checkAdmin" class="checkAdmin"> Confirm Admin</label>
+
+<center><button type="submit" class="btn btn-lg btn-primary btn-block btn-signup ">Submit</button> </center>
+</form> 
+</div>
+</div>

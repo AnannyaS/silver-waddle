@@ -1,0 +1,192 @@
+{{!-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> --}}
+<!-- ---- Include the above in your HEAD tag -------- -->
+
+<head>
+  <title>User Page</title>
+  <meta charset="utf-8">
+  {{!-- <meta name="viewport" content="width=device-width, initial-scale=1">    >User: {{user.username}} !  --}}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+
+
+<div class="container bootstrap snippet">
+    <div class="row">
+  		<div class="col-sm-10"><h6></h6></div>
+    	<div class="col-sm-2"><a href="/users" class="pull-right"><img title="profile image" class="img-circle img-responsive" src="http://www.gravatar.com/avatar/28fd20ccec6865e2d5f0e1f4446eb7bf?s=60"></a></div>
+    </div>
+    <div class="row">
+  		<div class="col-sm-3"><!--left col-->
+              
+
+      <div class="text-center">
+        <img src="http://ssl.gstatic.com/accounts/ui/avatar_1x.png" class="avatar img-circle img-thumbnail" alt="avatar">
+        {{!-- <h6>Upload a different photo...</h6>
+        <input type="file" class="text-center center-block file-upload"> --}}
+      </div></hr><br>
+
+               
+          <div class="panel panel-default">
+            <div class="panel-heading">Profile <i class="fa fa-link fa-1x"></i></div>
+            <ul class="list-group">
+            {{!-- <li class="list-group-item text-muted">Profile <i class="fa fa-dashboard fa-1x"></i></li> --}}
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Employee Name </strong></span> {{user.username}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Employee Code</strong></span> {{user.emp_cd}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Project Code</strong></span>{{user.project}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Project Location</strong></span> {{user.location}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Designation</strong></span> {{user.desg}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Department</strong></span>{{user.dept}}</li>
+             <li class="list-group-item text-right"><span class="pull-left"><strong>Admin Status</strong></span>{{user.checkAdmin}}</li>
+          </ul>
+          </div>
+         
+                         
+          {{!-- <div class="panel panel-default">
+            <div class="panel-heading">Account</div>
+            <div class="panel-body">
+            	<i class="fa fa-facebook fa-2x"></i> <i class="fa fa-github fa-2x">Github: solid_enigma</i> <i class="fa fa-twitter fa-2x"></i> <i class="fa fa-pinterest fa-2x"></i> <i class="fa fa-google-plus fa-2x"></i>
+            </div>
+          </div> --}}
+          
+        </div><!--/col-3-->
+    	<div class="col-sm-8">
+            <ul class="nav nav-tabs">
+                <li class="active"><a class="prof" data-toggle="tab" href="#home">Home</a></li>
+                <li><a class="prof" data-toggle="tab" href="#leaveAppl">Leave Applied</a></li>
+                <li><a class="prof" data-toggle="tab" href="#leaveApproved">Leaves Status</a></li>
+                {{!-- <li><a class="prof" data-toggle="tab" href="#leavePending">Leaves Pending</a></li> --}}
+            </ul>
+
+              
+          <div class="tab-content">
+            <div class="tab-pane active" id="home">
+                <div class="win">
+                    <div class="row">
+                        <div class="col-md-6"><label>Employee Name</label></div>
+                        <div class="col-md-6"><p>{{user.username}}</p></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6"><label>Employee Id</label></div>
+                      <div class="col-md-6"><p>{{user.emp_cd}}</p></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6"><label>Department</label></div>
+                        <div class="col-md-6"><p>{{user.dept}}</p></div>
+                    </div>  
+                    <div class="row">
+                        <div class="col-md-6"><label>Designation</label></div>
+                        <div class="col-md-6"><p>{{user.desg}}</p></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6"><label>Project</label></div>
+                      <div class="col-md-6"><p>{{user.project}}</p></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6"><label>Email</label></div>
+                        <div class="col-md-6"><p>{{user.email}}</p></div>
+                    </div>  
+                    <div class="row">
+                        <div class="col-md-6"><label>Contact Number</label></div>
+                        <div class="col-md-6"><p>{{user._id}} </p></div>
+                    </div> 
+                    <div class="row">
+                        <div class="col-md-6"><label>Term of Service </label></div>
+                        <div class="col-md-6"><p>{{user.DOJ}} </p></div>
+                    </div>  
+                </div>          
+            </div><!--/tab-pane-->
+
+            <div class="tab-pane" id="leaveAppl">
+                <div class="applcont">                  
+                      <div class="win">
+                        <table id="leaveApprv">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Srl. No.</th>
+                                <th>Appl. No.</th>
+                                <th>Appl Name</th>
+                                <th>Leave From</th>
+                                <th>Leave To</th>
+                                <th>Joining date</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              <ul>
+                                {{#each leave}} 
+                                  <tr>
+                                   <th><input type="checkbox" class="checkUser" id="checkbox" scope="row" data-id ={{this.applno}}></th>
+                                   <td>{{@index}}</td>
+                                   <td>{{this.applno}}</td>
+                                   <td>{{this.applname}}</td>
+                                   <td>{{this.fromDate}}</td>
+                                   <td>{{this.toDate}}</td>
+                                   <td>{{this.rejoinDate}}</td>
+                                   <td>{{this.status}}</td>   
+                                  </tr>                                 
+                                {{/each}}
+                              </ul>   
+                            </tbody>
+                       </table>
+                      <div class="table-footer text-center">
+                        <br>
+                        <button type="button" id="delBtn" class="btn btn-outline-primary" >DELETE</button>
+                     </div>    
+               </div>
+                 </div>           
+            </div><!--/tab-pane-->
+   
+             <div class="tab-pane" id="leaveApproved">               
+               <div class="win">
+                   <h4>Status</h4>
+                   <hr>
+                   <p>Your leave application no. </p>
+                    {{#each leave}}   
+                    {{#if @last}}
+                      <p><strong># {{this.applno}} </strong> dated <strong>{{this.fromDate}}</strong> to <strong>{{this.toDate}}</strong></p>
+                    {{/if}}      
+                    {{/each}}
+                      <p> is pending for approval.</p>                     
+               </div>
+            </div>
+
+        </div><!--/tab-pane-->
+     </div><!--/tab-content-->
+  </div><!--/col-9-->
+</div><!--/row-->
+
+<script>
+$(document).ready(function(){
+   
+ var checkedUser = [];
+  $(".checkUser").click(function checkUser(){
+    checkedUser.push($(this).data('id')) ;
+    });
+
+  $("#delBtn").click(function deleteLeave(){
+    alert('You selected ' + checkedUser.length);
+    var confirmation = confirm('Are you sure?');
+      if(confirmation){
+        for (var i = 0; i < checkedUser.length ; i++){
+          alert('you selected ' + checkedUser[i] );
+          $.ajax({
+            type:'DELETE',
+            url: 'http://localhost:3000/users/delete/' + checkedUser[i]
+          }).done(function(response){
+          console.log('deleted');
+        });
+       window.location.replace('http://localhost:3000/users/user');
+        }     
+     }
+      else { return false;}
+  });
+
+
+});
+</script>                                                    
+
